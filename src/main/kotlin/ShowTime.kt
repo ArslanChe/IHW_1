@@ -61,20 +61,4 @@ data class Showtime(
         }
     }
 
-
-
-    // Метод для проверки, продано ли место
-//
-//    // Метод для резервирования места
-//    fun reserveSeat(row: Int, seat: Int): Boolean {
-//        // Проверяем, свободно ли место
-//        if (!isSeatSold(row, seat)) {
-//            // Если место свободно, резервируем его
-//            soldSeats.add(Seat(row, seat))
-//            return true
-//        }
-//        return false
-//    }
-
-    // Другие методы для управления данными сеанса
 }
