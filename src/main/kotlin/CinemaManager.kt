@@ -177,7 +177,7 @@ class CinemaManager {
     }
 
     fun startCinema() {
-        loadAllData()
+
         runCinemaMenu()
     }
 
@@ -329,7 +329,6 @@ class CinemaManager {
                             println("Ошибка редактирования фильма.")
                         }
                     }
-
                     6 -> {
                         val movie: Movie? = selectMovieFromList()
 

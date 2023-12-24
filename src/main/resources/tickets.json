@@ -1,1 +1,1 @@
-[]
+[{"showtime":{"movie":{"title":"1","genre":"1","director":"1","releaseYear":1,"durationMinutes":1},"startTime":"1","durationMinutes":1,"availableSeats":[[true,true,false],[true,true,true],[true,true,true]],"hallSchema":[[true,true,true],[true,true,true],[true,true,true]]},"seat":{"row":0,"number":2},"price":10.0}]
