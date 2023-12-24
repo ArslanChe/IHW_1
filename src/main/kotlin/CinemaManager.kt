@@ -1,55 +1,65 @@
 class CinemaManager {
-    private val fileHandler = FileHandler() // Предполагаем, что у вас есть класс FileHandler для работы с файлами
+    private val fileHandler = FileHandler()
     private val users = mutableListOf<User>()
     private val movies = mutableListOf<Movie>()
     private val showtimes = mutableListOf<Showtime>()
     private val tickets = mutableListOf<Ticket>()
 
     init {
-        // Предполагаем, что при запуске приложения мы загружаем данные из файлов
         loadAllData()
     }
 
 
-    fun registerUser(username: String, password: String): Boolean {
-        if (users.find { it.username == username } == null){
+    private fun registerUser(username: String, password: String): Boolean {
+        if (users.find { it.username == username } == null) {
             val newUser = User(username, password)
             users.add(newUser)
             return true
-        }
-        else {
+        } else {
             return false
         }
     }
 
-    fun loginUser(username: String, password: String): Boolean {
+    private fun loginUser(username: String, password: String): Boolean {
         println(users)
         val existingUser = users.find { it.username == username }
-        return existingUser?.authenticate() ?: false
+        return existingUser?.authenticate(password) ?: false
     }
 
 
-
-    fun addMovie(title: String, genre: String, director: String, releaseYear: Int, durationMinutes: Int): Boolean {
+    private fun addMovie(
+        title: String,
+        genre: String,
+        director: String,
+        releaseYear: Int,
+        durationMinutes: Int
+    ): Boolean {
         val newMovie = Movie(title, genre, director, releaseYear, durationMinutes)
         if (newMovie.addMovie()) {
             movies.add(newMovie)
-//            saveDataToFiles()
+            saveDataToFiles()
             return true
         }
         return false
     }
 
-    fun removeMovie(existingMovie: Movie?): Boolean {
+    private fun removeMovie(existingMovie: Movie?): Boolean {
         if (existingMovie != null && existingMovie.removeMovie()) {
             movies.remove(existingMovie)
-//            saveDataToFiles()
+            saveDataToFiles()
             return true
         }
         return false
     }
 
-    fun editMovie(movie: Movie?, newTitle: String, newGenre: String, newDirector: String, newReleaseYear: Int, newDurationMinutes: Int): Boolean {
+    private fun editMovie(
+        movie: Movie?,
+        newTitle: String,
+        newGenre: String,
+        newDirector: String,
+        newReleaseYear: Int,
+        newDurationMinutes: Int
+    ): Boolean {
         return if (movie != null) {
             movie.title = newTitle
             movie.genre = newGenre
@@ -62,17 +72,17 @@ class CinemaManager {
         }
     }
 
-    fun sellTicket(showtime: Showtime,seatRow: Int, seatNumber: Int): Boolean {
+    private fun sellTicket(showtime: Showtime, seatRow: Int, seatNumber: Int): Boolean {
         val seat = Seat(seatRow, seatNumber)
         if (showtime.reserveSeat(seatRow, seatNumber)) {
-            val ticket = Ticket(showtime, seat, calculateTicketPrice(showtime), /* другие свойства билета */)
+            val ticket = Ticket(showtime, seat, calculateTicketPrice(showtime))
             tickets.add(ticket)
             return true
         }
         return false
     }
 
-    fun returnTicket(showtime: Showtime, seatRow: Int, seatNumber: Int): Boolean {
+    private fun returnTicket(showtime: Showtime, seatRow: Int, seatNumber: Int): Boolean {
         val ticket = tickets.find { it.showtime == showtime && it.seat.row == seatRow && it.seat.number == seatNumber }
         println(ticket)
         if (ticket != null) {
@@ -85,7 +95,7 @@ class CinemaManager {
         return false
     }
 
-    fun editShowtime(showtime: Showtime?, startTime: String, newDurationMinutes: Int): Boolean {
+    private fun editShowtime(showtime: Showtime?, startTime: String, newDurationMinutes: Int): Boolean {
 
         return if (showtime != null) {
             showtime.durationMinutes = newDurationMinutes
@@ -97,7 +107,13 @@ class CinemaManager {
     }
 
 
-    fun addShowtime(movie: Movie?, startTime: String, durationMinutes: Int, availableSeats: Array<Array<Boolean>>, hallSchema: Array<Array<Boolean>>): Boolean {
+    private fun addShowtime(
+        movie: Movie?,
+        startTime: String,
+        durationMinutes: Int,
+        availableSeats: Array<Array<Boolean>>,
+        hallSchema: Array<Array<Boolean>>
+    ): Boolean {
 
         if (movie != null) {
             val newShowtime = Showtime(movie, startTime, durationMinutes, availableSeats, hallSchema)
@@ -106,7 +122,7 @@ class CinemaManager {
             if (showtimes.none { it.startTime == startTime }) {
                 if (newShowtime.addShowtime()) {
                     showtimes.add(newShowtime)
-//                    saveDataToFiles() // Сохраняем изменения в файлах
+                    saveDataToFiles() // Сохраняем изменения в файлах
                     return true
                 }
             }
@@ -114,26 +130,26 @@ class CinemaManager {
         return false
     }
 
-    fun removeShowtime(movieTitle: String, startTime: String): Boolean {
+    private fun removeShowtime(movieTitle: String, startTime: String): Boolean {
         val movie = movies.find { it.title == movieTitle }
         val showtime = showtimes.find { it.movie == movie && it.startTime == startTime }
 
         if (movie != null && showtime != null && showtime.removeShowtime()) {
             showtimes.remove(showtime)
-//            saveDataToFiles() // Сохраняем изменения в файлах
+            saveDataToFiles() // Сохраняем изменения в файлах
             return true
         }
         return false
     }
 
-    fun loadAllData() {
+    private fun loadAllData() {
         loadUsers()
         loadMovies()
         loadShowtimes()
         loadTickets()
     }
 
-    fun saveDataToFiles() {
+    private fun saveDataToFiles() {
         fileHandler.saveDataToFile(users, "src/main/resources/users.json")
         fileHandler.saveDataToFile(movies, "src/main/resources/movies.json")
         fileHandler.saveDataToFile(showtimes, "src/main/resources/showtimes.json")
@@ -161,22 +177,22 @@ class CinemaManager {
     }
 
     fun startCinema() {
-//        loadAllData()
+        loadAllData()
         runCinemaMenu()
     }
 
     // Метод для расчета стоимости билета (может быть дополнен более сложной логикой)
     private fun calculateTicketPrice(showtime: Showtime): Double {
-        // Здесь может быть ваш алгоритм расчета стоимости билета
-        return 10.0 // Пример простой фиксированной стоимости
+
+        return 10.0 * showtime.durationMinutes
     }
+
     private fun generateHallSchema(seatCount: Int): Array<Array<Boolean>> {
-        // Генерация схемы зала
         return Array(seatCount) { Array(seatCount) { true } }
     }
 
     private fun getAvailableShowtimes(movie: Movie?): List<Showtime> {
-        return showtimes.filter { it.movie == movie}
+        return showtimes.filter { it.movie == movie }
     }
 
     private fun runCinemaMenu() {
@@ -186,7 +202,7 @@ class CinemaManager {
                 println("${index + 1}. ${movie.title}")
             }
 
-            val movieNumber = readLine()?.toIntOrNull()
+            val movieNumber = readlnOrNull()?.toIntOrNull()
 
             return if (movieNumber != null && movieNumber in 1..movies.size) {
                 movies[movieNumber - 1]
@@ -221,43 +237,45 @@ class CinemaManager {
             println("11. Выйти из кинотеатра")
 
             try {
-                choice = readLine()?.toInt() ?: 0
+                choice = readlnOrNull()?.toInt() ?: 0
 
                 when (choice) {
                     1 -> {
                         println("Введите имя пользователя:")
-                        val username = readLine() ?: ""
+                        val username = readlnOrNull() ?: ""
                         println("Введите пароль:")
-                        val password = readLine() ?: ""
+                        val password = readlnOrNull() ?: ""
                         if (registerUser(username, password)) {
                             println("Пользователь зарегистрирован успешно!")
                         } else {
                             println("Ошибка регистрации пользователя.")
                         }
                     }
+
                     2 -> {
                         println("Введите имя пользователя:")
-                        val username = readLine() ?: ""
+                        val username = readlnOrNull() ?: ""
                         println("Введите пароль:")
-                        val password = readLine() ?: ""
+                        val password = readlnOrNull() ?: ""
                         if (loginUser(username, password)) {
                             println("Вход выполнен успешно!")
-                            // Можете добавить логику для пользователя после входа
+
                         } else {
                             println("Ошибка входа. Проверьте имя пользователя и пароль.")
                         }
                     }
+
                     3 -> {
                         println("Введите название фильма:")
-                        val title = readLine() ?: ""
+                        val title = readlnOrNull() ?: ""
                         println("Введите жанр:")
-                        val genre = readLine() ?: ""
+                        val genre = readlnOrNull() ?: ""
                         println("Введите режиссера:")
-                        val director = readLine() ?: ""
+                        val director = readlnOrNull() ?: ""
                         println("Введите год выпуска:")
-                        val releaseYear = readLine()?.toIntOrNull() ?: 0
+                        val releaseYear = readlnOrNull()?.toIntOrNull() ?: 0
                         println("Введите длительность (в минутах):")
-                        val duration = readLine()?.toIntOrNull() ?: 0
+                        val duration = readlnOrNull()?.toIntOrNull() ?: 0
 
                         if (addMovie(title, genre, director, releaseYear, duration)) {
                             println("Фильм добавлен успешно!")
@@ -265,6 +283,7 @@ class CinemaManager {
                             println("Ошибка добавления фильма.")
                         }
                     }
+
                     4 -> {
                         val movie: Movie? = selectMovieFromList()
 
@@ -274,6 +293,7 @@ class CinemaManager {
                             println("Ошибка удаления фильма.")
                         }
                     }
+
                     5 -> {
                         val selectedMovie: Movie? = selectMovieFromList()
                         // Выводим текущие данные фильма
@@ -282,25 +302,34 @@ class CinemaManager {
 
                         // Предлагаем пользователю внести изменения
                         println("Введите новое название фильма:")
-                        val newTitle = readLine() ?: ""
+                        val newTitle = readlnOrNull() ?: ""
 
                         println("Введите новый жанр:")
-                        val newGenre = readLine() ?: ""
+                        val newGenre = readlnOrNull() ?: ""
 
                         println("Введите нового режиссера:")
-                        val newDirector = readLine() ?: ""
+                        val newDirector = readlnOrNull() ?: ""
 
                         println("Введите новый год выпуска:")
-                        val newReleaseYear = readLine()?.toIntOrNull() ?: 0
+                        val newReleaseYear = readlnOrNull()?.toIntOrNull() ?: 0
 
                         println("Введите новую длительность фильма (в минутах):")
-                        val newDurationMinutes = readLine()?.toIntOrNull() ?: 0
-                        if (editMovie(selectedMovie, newTitle, newGenre, newDirector, newReleaseYear, newDurationMinutes)) {
+                        val newDurationMinutes = readlnOrNull()?.toIntOrNull() ?: 0
+                        if (editMovie(
+                                selectedMovie,
+                                newTitle,
+                                newGenre,
+                                newDirector,
+                                newReleaseYear,
+                                newDurationMinutes
+                            )
+                        ) {
                             println("Фильм успешно отредактирован.")
                         } else {
                             println("Ошибка редактирования фильма.")
                         }
                     }
+
                     6 -> {
                         val movie: Movie? = selectMovieFromList()
 
@@ -314,7 +343,7 @@ class CinemaManager {
                         }
 
                         println("Выберите номер сеанса:")
-                        val selectedShowtimeNumber = readLine()?.toIntOrNull() ?: 0
+                        val selectedShowtimeNumber = readlnOrNull()?.toIntOrNull() ?: 0
 
                         // Проверяем валидность выбора сеанса
                         if (selectedShowtimeNumber in 1..availableShowtimes.size) {
@@ -322,14 +351,13 @@ class CinemaManager {
                             selectedShowtime.displayHallSchema()
                             println("Введите номер места:")
 
-// Пользователь вводит номер ряда и места
-                            val seatNumber = readLine()?.toIntOrNull() ?: 0
+                            // Пользователь вводит номер ряда и места
+                            val seatNumber = readlnOrNull()?.toIntOrNull() ?: 0
 
-// Преобразуем номер места в координаты ряда и места в двумерном массиве
+
                             val row = (seatNumber - 1) / selectedShowtime.availableSeats[0].size
                             val seatInRow = (seatNumber - 1) % selectedShowtime.availableSeats[0].size
 
-// Ваш код для продажи билета
                             if (sellTicket(selectedShowtime, row, seatInRow)) {
                                 println("Билет продан успешно!")
                             } else {
@@ -340,17 +368,15 @@ class CinemaManager {
                             println("Неверный выбор сеанса.")
                         }
                     }
-
                     7 -> {
                         val movie: Movie? = selectMovieFromList()
                         println("Введите время начала сеанса:")
-                        val startTime = readLine() ?: ""
+                        val startTime = readlnOrNull() ?: ""
                         println("Введите длительность сеанса (в минутах):")
-                        val duration = readLine()?.toIntOrNull() ?: 0
+                        val duration = readlnOrNull()?.toIntOrNull() ?: 0
                         println("Введите количество доступных мест:")
                         val availableSeats: Array<Array<Boolean>> = Array(3) { Array(3) { true } }
                         val hallSchema: Array<Array<Boolean>> = Array(3) { Array(3) { true } }
-
                         if (addShowtime(movie, startTime, duration, availableSeats, hallSchema)) {
                             println("Сеанс добавлен успешно!")
                         } else {
@@ -360,10 +386,8 @@ class CinemaManager {
                     8 -> {
                         // Вывести список всех сеансов
                         displayShowtimes()
-
                         println("Введите номер сеанса для удаления:")
                         val selectedShowtimeNumber = readLine()?.toIntOrNull() ?: 0
-
                         if (selectedShowtimeNumber in 1..showtimes.size) {
                             val selectedShowtime = showtimes[selectedShowtimeNumber - 1]
                             if (removeShowtime(selectedShowtime.movie.title, selectedShowtime.startTime)) {
@@ -377,9 +401,8 @@ class CinemaManager {
                     }
                     9 -> {
                         displayShowtimes()
-
                         println("Введите номер сеанса для удаления:")
-                        val selectedShowtimeNumber = readLine()?.toIntOrNull() ?: 0
+                        val selectedShowtimeNumber = readlnOrNull()?.toIntOrNull() ?: 0
 
                         if (selectedShowtimeNumber in 1..showtimes.size) {
                             var showtimeToEdit = showtimes[selectedShowtimeNumber - 1]
@@ -388,10 +411,10 @@ class CinemaManager {
                             println(showtimeToEdit)
 
                             println("Введите новое время начала сеанса:")
-                            val newStartTime = readLine() ?: ""
+                            val newStartTime = readlnOrNull() ?: ""
 
                             println("Введите новую длительность сеанса (в минутах):")
-                            val newDurationMinutes = readLine()?.toIntOrNull() ?: 0
+                            val newDurationMinutes = readlnOrNull()?.toIntOrNull() ?: 0
 
                             if (editShowtime(showtimeToEdit, newStartTime, newDurationMinutes)) {
                                 println("Сеанс успешно отредактирован.")
@@ -400,35 +423,25 @@ class CinemaManager {
                             }
                         }
                     }
+
                     10 -> {
                         displayShowtimes()
-
                         println("Введите номер сеанса для удаления:")
-                        val selectedShowtimeNumber = readLine()?.toIntOrNull() ?: 0
-
+                        val selectedShowtimeNumber = readlnOrNull()?.toIntOrNull() ?: 0
                         if (selectedShowtimeNumber in 1..showtimes.size) {
                             var selectedShowtime = showtimes[selectedShowtimeNumber - 1]
-
                             selectedShowtime.displayHallSchema()
                             println("Введите номер места:")
-
-// Пользователь вводит номер ряда и места
-                            val seatNumber = readLine()?.toIntOrNull() ?: 0
-
-// Преобразуем номер места в координаты ряда и места в двумерном массиве
+                            val seatNumber = readlnOrNull()?.toIntOrNull() ?: 0
                             val row = (seatNumber - 1) / selectedShowtime.availableSeats[0].size
                             val seatInRow = (seatNumber - 1) % selectedShowtime.availableSeats[0].size
-
                             if (returnTicket(selectedShowtime, row, seatInRow)) {
                                 println("Билет успешно возвращен.")
                             } else {
                                 println("Ошибка возврата билета.")
                             }
                         }
-
-
                     }
-
                     11 -> {
                         println("Выход из кинотеатра")
                     }
@@ -440,10 +453,7 @@ class CinemaManager {
                 println("Ошибка ввода. Пожалуйста, введите число.")
                 choice = 0
             }
-
-
             saveDataToFiles()
-
         } while (choice != 11)
     }
 }

@@ -5,8 +5,8 @@ data class Showtime(
     var startTime: String,
     var durationMinutes: Int,
     val availableSeats: Array<Array<Boolean>>,
-    val hallSchema: Array<Array<Boolean>>, // Пример: двумерный массив, где true - место свободно, false - место занято
-    /* другие свойства сеанса */
+    val hallSchema: Array<Array<Boolean>>
+
 ) {
     companion object {
         private val showtimes = mutableListOf<Showtime>()

@@ -2,7 +2,6 @@ data class Ticket(
     val showtime: Showtime,
     val seat: Seat,
     val price: Double,
-    /* другие свойства билета */
 ) {
     companion object {
         private val tickets = mutableListOf<Ticket>()
@@ -13,14 +12,6 @@ data class Ticket(
         }
     }
 
-//    fun sellTicket(): Boolean {
-//        val seatAvailable = showtime.reserveSeat(seat.row, seat.number)
-//        if (seatAvailable) {
-//            tickets.add(this)
-//            return true
-//        }
-//        return false
-//    }
 
     fun returnTicket(): Boolean {
         showtime.cancelReservation(seat.row, seat.number)
@@ -28,5 +19,4 @@ data class Ticket(
         return true
     }
 
-    // Другие методы для работы с данными билета
 }

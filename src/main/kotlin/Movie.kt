@@ -3,8 +3,7 @@ data class Movie(
     var genre: String,
     var director: String,
     var releaseYear: Int,
-    var durationMinutes: Int,
-    /* другие свойства фильма */
+    var durationMinutes: Int
 ) {
     companion object {
         private val movies = mutableListOf<Movie>()
@@ -26,6 +25,4 @@ data class Movie(
     fun removeMovie(): Boolean {
         return true
     }
-
-    // Другие методы для работы с данными фильма
 }

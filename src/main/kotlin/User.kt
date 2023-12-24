@@ -1,10 +1,10 @@
 import java.security.MessageDigest
 import org.mindrot.jbcrypt.BCrypt
 
-class User(val username: String, var encryptedPassword: String) {
+class User(val username: String, var password: String) {
 
     init {
-        encryptedPassword = BCrypt.hashpw(encryptedPassword, BCrypt.gensalt())
+        password = BCrypt.hashpw("", BCrypt.gensalt())
     }
 
     companion object {
@@ -23,11 +23,11 @@ class User(val username: String, var encryptedPassword: String) {
     }
 
 
-    fun authenticate(): Boolean {
+    fun authenticate(password: String): Boolean {
         val foundUser = findUserByUsername(username)
         if (foundUser != null) {
-            val enteredPasswordHash = encryptPassword(encryptedPassword)
-            return foundUser.encryptedPassword == enteredPasswordHash
+            val enteredPasswordHash = encryptPassword(password)
+            return foundUser.password == enteredPasswordHash
         }
         return false
     }
