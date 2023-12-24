@@ -1,1 +1,5 @@
-[{"username":"admin"},{"username":"user1"},{"username":"user2"},{"username":"Artem"},{"username":"12"}]
+[
+  {
+    "username": "12"
+  }
+]

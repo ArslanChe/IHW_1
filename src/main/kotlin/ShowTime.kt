@@ -35,7 +35,7 @@ data class Showtime(
     }
 
     fun reserveSeat(row: Int, number: Int): Boolean {
-        if (availableSeats[row][number]){
+        if (availableSeats[row][number]) {
             availableSeats[row][number] = false
             return true
         }
@@ -49,7 +49,7 @@ data class Showtime(
 
     fun displayHallSchema() {
         // Выводим схему зала с обозначением свободных и занятых мест
-        var k: Int  = 0;
+        var k: Int = 0;
         println("Экран тут")
         for (row in availableSeats.indices) {
             for (seat in availableSeats[row].indices) {

@@ -187,10 +187,6 @@ class CinemaManager {
         return 10.0 * showtime.durationMinutes
     }
 
-    private fun generateHallSchema(seatCount: Int): Array<Array<Boolean>> {
-        return Array(seatCount) { Array(seatCount) { true } }
-    }
-
     private fun getAvailableShowtimes(movie: Movie?): List<Showtime> {
         return showtimes.filter { it.movie == movie }
     }
@@ -329,6 +325,7 @@ class CinemaManager {
                             println("Ошибка редактирования фильма.")
                         }
                     }
+
                     6 -> {
                         val movie: Movie? = selectMovieFromList()
 
@@ -367,6 +364,7 @@ class CinemaManager {
                             println("Неверный выбор сеанса.")
                         }
                     }
+
                     7 -> {
                         val movie: Movie? = selectMovieFromList()
                         println("Введите время начала сеанса:")
@@ -382,6 +380,7 @@ class CinemaManager {
                             println("Ошибка добавления сеанса.")
                         }
                     }
+
                     8 -> {
                         // Вывести список всех сеансов
                         displayShowtimes()
@@ -398,6 +397,7 @@ class CinemaManager {
                             println("Неверный номер сеанса.")
                         }
                     }
+
                     9 -> {
                         displayShowtimes()
                         println("Введите номер сеанса для удаления:")
@@ -441,9 +441,11 @@ class CinemaManager {
                             }
                         }
                     }
+
                     11 -> {
                         println("Выход из кинотеатра")
                     }
+
                     else -> {
                         println("Неверный выбор. Пожалуйста, выберите еще раз.")
                     }
